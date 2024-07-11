@@ -11,6 +11,8 @@ import SimpleLightbox from 'simplelightbox';
 // Додатковий імпорт стилів
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
+import axios from 'axios';
+
 export const searchForm = document.querySelector('.form');
 export const formInput = document.querySelector('.form-input');
 export const loader = document.querySelector('.loader');
@@ -20,7 +22,7 @@ loader.style.display = 'none';
 
 searchForm.addEventListener('submit', handlerSearch);
 
-function handlerSearch(event) {
+async function handlerSearch(event) {
   event.preventDefault();
 
   const queryValue = formInput.value.toLowerCase().trim();
@@ -35,38 +37,63 @@ function handlerSearch(event) {
     });
     return;
   }
-  gallery.innerHTML = '';
+
   showLoader();
 
-  getPicturesByQuery(queryValue)
-    .then(data => {
-      console.log(data);
-      if (!data.hits.length) {
-        iziToast.error({
-          position: 'topRight',
-          maxWidth: '432px',
-          backgroundColor: 'red',
-          title: 'Error',
-          message:
-            'Sorry, there are no images matching your search query. Please try again!',
-        });
-        return;
-      }
-
-      showImages(data.hits);
-      lightbox.refresh();
-    })
-    .catch(error => {
-      console.log(error);
+  try {
+    const data = await getPicturesByQuery(queryValue);
+    if (!data.hits.length) {
       iziToast.error({
+        position: 'topRight',
+        maxWidth: '432px',
+        backgroundColor: 'red',
         title: 'Error',
-        message: 'Something went wrong.',
+        message:
+          'Sorry, there are no images matching your search query. Please try again!',
       });
-    })
-    .finally(() => {
-      offShowLoader();
+      return;
+    }
+    gallery.innerHTML = '';
+    showImages(data.hits);
+    lightbox.refresh();
+  } catch (error) {
+    console.log(error);
+    iziToast.error({
+      title: 'Error',
+      message: 'Something went wrong.',
     });
+  } finally {
+    offShowLoader();
+  }
 }
+// getPicturesByQuery(queryValue);
+// .then(data => {
+//   console.log(data);
+//   if (!data.hits.length) {
+//     iziToast.error({
+//       position: 'topRight',
+//       maxWidth: '432px',
+//       backgroundColor: 'red',
+//       title: 'Error',
+//       message:
+//         'Sorry, there are no images matching your search query. Please try again!',
+//     });
+//     return;
+//   }
+
+//   showImages(data.hits);
+//   lightbox.refresh();
+// })
+// .catch(error => {
+//   console.log(error);
+//   iziToast.error({
+//     title: 'Error',
+//     message: 'Something went wrong.',
+//   });
+// })
+// .finally(() => {
+//   offShowLoader();
+// });
 
 export function showLoader() {
   if (loader) {
