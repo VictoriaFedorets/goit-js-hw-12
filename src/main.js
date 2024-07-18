@@ -1,4 +1,4 @@
-import { getPicturesByQuery } from './js/pixabay-api';
+import { getPicturesByQuery, page, perPage } from './js/pixabay-api';
 import { showImages } from './js/render-functions';
 
 // Описаний у документації
@@ -66,6 +66,17 @@ async function handlerSearch(event) {
     offShowLoader();
   }
 }
+
+const fetchPageBtn = document.querySelector('.btn-page');
+fetchPageBtn.addEventListener('click', async () => {
+  if (page > totlPages) {
+    return iziToast.error({
+      position: 'topRight',
+      message: "We're sorry, there are no more posts to load",
+    });
+  }
+});
+
 // getPicturesByQuery(queryValue);
 // .then(data => {
 //   console.log(data);
