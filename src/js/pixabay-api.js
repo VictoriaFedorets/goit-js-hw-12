@@ -1,22 +1,25 @@
 import { formInput, gallery } from '../main';
 import axios from 'axios';
 
-export let page = 1;
-export let perPage = 15;
-export const totalPages = Math.ceil(100 / perPage);
+const BASE_URL = 'https://pixabay.com/api/';
+const API_KEY = '44763661-907a9c415cab9d29c7901c7cc';
 
-export async function getPicturesByQuery() {
-  const query = formInput.value;
-  console.log(query);
-  const API_KEY = '44763661-907a9c415cab9d29c7901c7cc';
-
-  const params = new URLSearchParams({
-    per_page: perPage,
-    page: page,
-  });
-  return (
-    await axios.get(
-      `https://pixabay.com/api/?key=${API_KEY}&q=${query}&image_type=photo&orientation=horizontal&safesearch=true${params}`
-    )
-  ).data;
+export async function getPicturesByQuery(q = '', page = 1, perPage = 15) {
+  try {
+    const response = await axios.get(`${BASE_URL}`, {
+      params: {
+        key: API_KEY,
+        q,
+        image_type: 'photo',
+        orientation: 'horizontal',
+        safesearch: true,
+        page: page,
+        per_page: perPage,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error images:', error);
+    throw error;
+  }
 }
