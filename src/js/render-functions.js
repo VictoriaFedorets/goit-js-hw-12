@@ -1,4 +1,8 @@
 import { gallery } from '../main';
+// Описаний у документації
+import SimpleLightbox from 'simplelightbox';
+// Додатковий імпорт стилів
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 export function showImages(arr) {
   const markup = arr
@@ -45,4 +49,11 @@ export function showImages(arr) {
     )
     .join('');
   gallery.innerHTML = markup;
+  lightbox.refresh();
 }
+
+const lightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionPosition: 'bottom',
+  captionDelay: 250,
+});

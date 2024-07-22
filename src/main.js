@@ -6,30 +6,21 @@ import iziToast from 'izitoast';
 // Додатковий імпорт стилів
 import 'izitoast/dist/css/iziToast.min.css';
 
-// Описаний у документації
-import SimpleLightbox from 'simplelightbox';
-// Додатковий імпорт стилів
-import 'simplelightbox/dist/simple-lightbox.min.css';
-
-import axios from 'axios';
-
-export const searchForm = document.querySelector('.form');
-export const formInput = document.querySelector('.form-input');
-export const loader = document.querySelector('.loader');
 export const gallery = document.querySelector('.gallery');
-export const btnPage = document.querySelector('.btn-page');
+const searchForm = document.querySelector('.form');
+const loader = document.querySelector('.loader');
+const btnPage = document.querySelector('.btn-page');
+// const formInput = document.querySelector('.form-input');
 
 let q = '';
 let page = 1;
 const perPage = 15;
 let totalHits = 0;
-//const hiddenClass = 'is-hidden';
 
 searchForm.addEventListener('submit', handlerSearch);
 
 async function handlerSearch(event) {
   event.preventDefault();
-
   q = event.target.elements.query.value.trim();
 
   if (q === '') {
@@ -46,7 +37,7 @@ async function handlerSearch(event) {
 
   page = 1;
   gallery.innerHTML = '';
-  offShowLoader();
+  offShowLoader(btnPage, loader);
 
   try {
     const data = await getPicturesByQuery(q, page, perPage);
@@ -63,10 +54,9 @@ async function handlerSearch(event) {
       });
     } else {
       showImages(data.hits);
-      lightbox.refresh();
 
       if (data.hits.length < totalHits) {
-        showBtn();
+        showBtn(btnPage);
       }
     }
   } catch (error) {
@@ -80,38 +70,14 @@ async function handlerSearch(event) {
   }
 }
 
-export function showLoader(btnPage, loader) {
-  btnPage.classList.remove('is-hidden');
-  loader.classList.add('is-hidden');
-}
-
-export function offShowLoader(btnPage, loader) {
-  btnPage.classList.add('is-hidden');
-  loader.classList.remove('is-hidden');
-}
-
-export function offShowBtn(btnPage) {
-  btnPage.classList.add('is-hidden');
-}
-
-export function showBtn(btnPage) {
-  btnPage.classList.remove('is-hidden');
-}
-
-const lightbox = new SimpleLightbox('.gallery a', {
-  captionsData: 'alt',
-  captionPosition: 'bottom',
-  captionDelay: 250,
-});
-
 btnPage.addEventListener('click', showMorePage);
 
 async function showMorePage() {
   page += 1;
-  offShowLoader();
+  offShowLoader(btnPage, loader);
 
   try {
-    const data = await fetchImages(q, page, perPage);
+    const data = await getPicturesByQuery(q, page, perPage);
     showImages(data.hits);
 
     const totalImages = page * perPage;
@@ -121,8 +87,16 @@ async function showMorePage() {
         message: "We're sorry, but you've reached the end of search results.",
       });
     } else {
-      showBtn();
+      showBtn(btnPage);
     }
+    // прокрутка
+    const galleryItem = document.querySelector('.gallery-item');
+    const itemHeight = galleryItem.getBoundingClientRect().height;
+    window.scrollBy({
+      top: itemHeight * 2,
+      left: itemHeight * 2,
+      behavior: 'smooth',
+    });
   } catch (error) {
     iziToast.error({
       title: 'Error',
@@ -131,4 +105,22 @@ async function showMorePage() {
   } finally {
     loader.classList.add('is-hidden');
   }
+}
+
+// function showLoader(btnPage, loader) {
+//   btnPage.classList.remove('is-hidden');
+//   loader.classList.add('is-hidden');
+// }
+
+function offShowLoader(btnPage, loader) {
+  btnPage.classList.add('is-hidden');
+  loader.classList.remove('is-hidden');
+}
+
+// function offShowBtn(btnPage) {
+//   btnPage.classList.add('is-hidden');
+// }
+
+function showBtn(btnPage) {
+  btnPage.classList.remove('is-hidden');
 }

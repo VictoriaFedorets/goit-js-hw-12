@@ -193,3 +193,11 @@ span {
     transform: rotate(360deg);
   }
 }
+
+.btn-page {
+  margin-top: 32px;
+}
+
+.is-hidden {
+  display: none;
+}

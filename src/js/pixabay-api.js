@@ -1,4 +1,3 @@
-import { formInput, gallery } from '../main';
 import axios from 'axios';
 
 const BASE_URL = 'https://pixabay.com/api/';
@@ -9,7 +8,7 @@ export async function getPicturesByQuery(q = '', page = 1, perPage = 15) {
     const response = await axios.get(`${BASE_URL}`, {
       params: {
         key: API_KEY,
-        q,
+        q: q,
         image_type: 'photo',
         orientation: 'horizontal',
         safesearch: true,
