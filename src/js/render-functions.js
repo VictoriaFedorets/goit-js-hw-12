@@ -48,7 +48,8 @@ export function showImages(arr) {
       }
     )
     .join('');
-  gallery.innerHTML = markup;
+
+  gallery.insertAdjacentHTML('beforeend', markup);
   lightbox.refresh();
 }
 
